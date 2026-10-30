@@ -5,6 +5,7 @@
 <style><![CDATA[
 
 
+
 :root{--bg:#1f1f21;--bar:#2a2a2c;--pill:#38383a;--pill2:#454548;--tx:#f2f2f5;--dim:#98989f;--ac:#0a84ff;--bd:#ffffff1a;--sf:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",system-ui,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 #svgRoot{margin:0;height:100%;background:var(--bg);color:var(--tx);font:13px var(--sf);overflow:hidden;user-select:none}
@@ -291,6 +292,9 @@ html{overscroll-behavior:none;touch-action:manipulation}
  #mascot-panel .mascot-title{font-size:32px}
  #mascot-panel .mascot-art{height:136px}#mascot-panel #mascot-image{height:136px;max-width:104px}}
 @media(prefers-reduced-motion:reduce){*,::before,::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}#mascot-panel #mascot-image{animation:none}}
+
+
+.rc .fav{width:28px;height:28px;border-radius:7px;font-size:11px;flex:none}
 
 ]]></style>
 <foreignObject x="0" y="0" width="100%" height="100%">
@@ -758,14 +762,13 @@ $("#dd").onchange=e=>{S.dd=+e.target.value;save();emu()};
 $("#dr").onclick=()=>{S.dr=S.dr?0:1;save();emu()};
 $("#dx").onclick=()=>{S.dev=0;save();emu()};
 addEventListener("resize",emu);
-/* ---- real favicons, favorites, recents ---- */
-const NF=[["Apple","https://www.apple.com","","#f2f2f4"],["iCloud","https://www.icloud.com","","#fff"],["Yahoo","https://www.yahoo.com","","#6001d2"],["Bing","https://www.bing.com","","#fff"],["Google","https://www.google.com","","#fff"],["Wikipedia","https://www.wikipedia.org","","#fff"],["Facebook","https://www.facebook.com","","#1877f2"],["X","https://x.com","","#000"],["YouTube","https://www.youtube.com","","#fff"],["Reddit","https://www.reddit.com","","#fff"],["GitHub","https://github.com","","#fff"],["Amazon","https://www.amazon.com","","#fff"]];
+/* ---- local shortcut icons, favorites, recents ---- */
+const NF=[["Apple","https://www.apple.com","A","#f2f2f4"],["iCloud","https://www.icloud.com","☁","#fff"],["Yahoo","https://www.yahoo.com","!","#6001d2"],["Bing","https://www.bing.com","B","#fff"],["Google","https://www.google.com","G","#fff"],["Wikipedia","https://www.wikipedia.org","W","#fff"],["Facebook","https://www.facebook.com","f","#1877f2"],["X","https://x.com","𝕏","#000"],["YouTube","https://www.youtube.com","▶","#fff"],["Reddit","https://www.reddit.com","R","#fff"],["GitHub","https://github.com","GH","#fff"],["Amazon","https://www.amazon.com","a","#fff"]];
 if(S.v!==2){S.favs=NF;S.v=2;save()}
-function fb(i){const b=htmlEl("b");b.className="lt";b.textContent=i.dataset.l;i.replaceWith(b)}
-function ico(u,c){return `<img class="${c||"fav"}" data-l="${esc((host(u)[0]||"?").toUpperCase())}" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(u))}&sz=128" alt="" draggable="false" onerror="fb(this)">`}
+function ico(u,c){const h=host(u)||"?";const col="#"+(Math.abs([...h].reduce((a,x)=>a*31+x.charCodeAt(0)|0,7))%0xffffff).toString(16).padStart(6,"0");return `<i class="${c||"fav"}" aria-hidden="true" style="background:${col}">${esc((h[0]||"?").toUpperCase())}</i>`}
 function fav(t){return t.url?ico(t.url):`<span style="font-size:13px">☆</span>`}
 const rec={};
-function favs(){const k=JSON.stringify(S.favs);if(favs.k!==k){favs.k=k;$("#favs").innerHTML=S.favs.map((f,i)=>`<div class="f" style="--i:${i}" data-f="${i}"><button class="d" data-d="${i}">${I("x")}</button><div class="t" style="background:${f[3]}">${ico(f[1],"ti")}</div>${esc(f[0])}</div>`).join("")+`<button type="button" class="f" id="fa" style="display:none;--i:${S.favs.length}" aria-label="New shortcut"><div class="t" style="background:rgba(255,255,255,.16);font-size:38px;font-weight:300">+</div>Add</button>`}
+function favs(){const k=JSON.stringify(S.favs);if(favs.k!==k){favs.k=k;$("#favs").innerHTML=S.favs.map((f,i)=>`<div class="f" style="--i:${i}" data-f="${i}"><button class="d" data-d="${i}">${I("x")}</button><div class="t" style="background:${f[3]||"rgba(255,255,255,.12)"};color:${f[3]=="#fff"||f[3]=="#e8e8ea"?"#222":"#fff"}">${esc(f[2]||f[0][0])}</div>${esc(f[0])}</div>`).join("")+`<button type="button" class="f" id="fa" style="display:none;--i:${S.favs.length}" aria-label="New shortcut"><div class="t" style="background:rgba(255,255,255,.16);font-size:38px;font-weight:300">+</div>Add</button>`}
  const seen=new Set(),R=[];for(const h of S.hist){const o=host(h.u);if(!seen.has(o)){seen.add(o);R.push(h)}if(R.length>=6)break}
  const rk=JSON.stringify(R.map(x=>x.u));if(rec.k!==rk){rec.k=rk;$("#rh").style.display=R.length?"block":"none";$("#rec").innerHTML=R.map((h,i)=>`<button class="rc" style="--i:${i}" data-u="${esc(h.u)}">${ico(h.u)}<span>${esc(h.t||host(h.u))}<small>${esc(host(h.u))}</small></span></button>`).join("")}}
 $("#favs").insertAdjacentHTML("afterend",'<h2 id="rh" style="display:none;margin-top:38px">Recently Visited</h2><div id="rec"></div>');

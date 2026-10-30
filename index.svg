@@ -792,7 +792,7 @@ $("#ck").onclick=()=>cloakPage();
 addEventListener("keydown",e=>{const m=e.metaKey||e.ctrlKey,k=e.key.toLowerCase();if(!m)return;
  const a={t:()=>{mk();setTimeout(()=>$("#url").focus(),30)},w:()=>close(cur),l:()=>$("#url").focus(),r:()=>$("#rl").click(),"[":back,"]":fwd,d:toggleBm,",":()=>$("#st").classList.add("o"),"\\":()=>ovo(!$("#ov").classList.contains("o")),"=":()=>zs(.1),"-":()=>zs(-.1),"0":()=>zs(0)}[k];if(a){e.preventDefault();a()}});
 /* responsive mode */
-function mode(){const e=$("#dev"),w=e.clientWidth,h=e.clientHeight,mob=Math.min(w,h)<700;["desktop","portrait","landscape"].forEach(c=>$("#svgRoot").classList.remove(c));$("#svgRoot").classList.add(mob?(h>w?"portrait":"landscape"):"desktop");render()}
+function mode(){const e=$("#dev"),root=$("#svgRoot"),emulating=S.dev==1,w=emulating?e.clientWidth:Math.max(root.clientWidth||0,window.innerWidth||0),h=emulating?e.clientHeight:Math.max(root.clientHeight||0,window.innerHeight||0),mob=Math.min(w,h)<700;["desktop","portrait","landscape"].forEach(c=>root.classList.remove(c));root.classList.add(mob?(h>=w?"portrait":"landscape"):"desktop");render()}
 const DV=[["iPhone 16 Pro",402,874],["iPhone SE",375,667],["Pixel 9",412,915],["iPad Air",820,1180]];
 $("#dd").innerHTML=DV.map((d,i)=>`<option value="${i}">${d[0]}</option>`).join("");$("#dd").value=S.dd;$("#dvs").value=S.dev;
 function emu(){const on=S.dev==1,e=$("#dev");$("#svgRoot").classList.toggle("emu",on);$("#dvs").value=S.dev;
@@ -864,12 +864,15 @@ document.addEventListener("pointermove",e=>{
 $("#svgRoot").addEventListener("mouseleave",clearGlassGlow);
 document.addEventListener("pointerup",e=>{if(e.pointerType!=="mouse")clearGlassGlow()});
 
-/* boot */
+/* boot: render the browser UI before any network-dependent engine startup. */
+mk();
+emu();
+mode();
+diagLog("INFO","Splooshi interface rendered; starting proxy engine independently.");
 (async()=>{
- diagLog("INFO","Splooshi startup sequence began.");
  try{await Engine.init();toast("Splooshi is online");diagLog("SUCCESS","Splooshi startup complete; proxy engine is ready.")}
- catch(e){console.error("[Splooshi] Startup failed",e);toast("Startup failed — open Logs");setTimeout(openDiagnostics,80)}
- mk();emu();const q=new URLSearchParams(location.search).get("url");if(q&&Engine.ready)go(cur,q)
+ catch(e){console.error("[Splooshi] Startup failed",e);toast("Proxy offline — open Logs");setTimeout(openDiagnostics,80)}
+ const q=new URLSearchParams(location.search).get("url");if(q&&Engine.ready)go(cur,q)
 })();
 
 ]]></script>

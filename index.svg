@@ -341,6 +341,9 @@ html{overscroll-behavior:none;touch-action:manipulation}
  #svgRoot{height:100dvh!important}
  #logLaunch{position:absolute!important;right:12px!important;bottom:calc(84px + env(safe-area-inset-bottom))!important;left:auto!important;top:auto!important;z-index:9999!important;min-height:42px!important;padding:10px 14px!important;opacity:1!important;transform:none!important}
 }
+/* Crossfade between the old and destination page when the new frame finishes loading. */
+#views iframe{transition:opacity 280ms ease}
+@media(prefers-reduced-motion:reduce){#views iframe{transition:none!important}}
 ]]></style>
 <foreignObject x="0" y="0" width="100%" height="100%">
 <div xmlns="http://www.w3.org/1999/xhtml" id="svgRoot" style="display:block;position:relative;width:100vw;height:100vh;overflow:hidden;margin:0;padding:0;">
@@ -654,9 +657,23 @@ document.addEventListener("click",e=>{const b=e.target.closest("button,.ib,.tab,
 /* ===== tabs ===== */
 let tabs=[],cur;
 function mk(url){const t={id:Math.random(),url:"",title:"",h:[],i:-1,z:1};tabs.push(t);cur=t;if(url)go(t,url);else render();return t}
-function frame(t){const f=htmlEl("iframe");f.allow="fullscreen;autoplay;clipboard-write;encrypted-media";f.onload=()=>loaded(t);f.onerror=()=>diagLog("ERROR","Proxy iframe emitted an error event for "+diagRedact(t.url||"about:blank"));t.f=f;$("#views").append(f);try{Engine.attach(t)}catch(e){diagLog("ERROR","Proxy frame setup failed: "+diagFormat(e));throw e}zoom(t)}
-function go(t,u,push=true){u=norm(u);if(!u)return;diagLog("INFO","Navigation input: "+diagRedact(u));uiSound("navigate");try{if(push){t.h=t.h.slice(0,t.i+1);t.h.push(u);t.i++}t.url=u;t.title=host(u);if(!Engine.ready){t.pendingUrl=u;diagLog("INFO","Navigation queued until Scramjet is ready.");render();return}delete t.pendingUrl;if(!t.f)frame(t);Engine.go(t,u);render()}catch(e){diagLog("ERROR","Navigation failed for "+diagRedact(u)+": "+diagFormat(e));toast("Navigation failed — open Logs");openDiagnostics()}}
-function loaded(t){try{const doc=t.f?.contentDocument,body=(doc?.body?.innerText||"").trim();if(/^Internal Service Worker Error:/i.test(body))diagLog("ERROR","Proxy returned a service-worker error page: "+body.slice(0,900));const u=Engine.currentUrl(t);if(u&&u!==t.url){t.url=u;t.h=t.h.slice(0,t.i+1);t.h.push(u);t.i++}const n=Engine.title(t);t.title=n||host(t.url);if(t.url){diagLog("SUCCESS","Frame load event received for "+diagRedact(t.url));if(!S.hist[0]||S.hist[0].u!==t.url)S.hist.unshift({u:t.url,t:t.title,d:Date.now()});S.hist=S.hist.slice(0,300);save()}}catch(e){diagLog("WARN","Frame load completed, but page details could not be read: "+diagFormat(e))}render()}
+function frame(t,onload){const f=htmlEl("iframe");f.allow="fullscreen;autoplay;clipboard-write;encrypted-media";f.onload=()=>{if(onload)onload();else loaded(t)};f.onerror=()=>diagLog("ERROR","Proxy iframe emitted an error event for "+diagRedact(t.url||"about:blank"));t.f=f;$("#views").append(f);try{Engine.attach(t)}catch(e){diagLog("ERROR","Proxy frame setup failed: "+diagFormat(e));throw e}zoom(t);return f}
+function finishLoad(t,frameState){try{const doc=frameState.f?.contentDocument,body=(doc?.body?.innerText||"").trim();if(/^Internal Service Worker Error:/i.test(body))diagLog("ERROR","Proxy returned a service-worker error page: "+body.slice(0,900));const n=Engine.title(frameState);t.title=n||host(t.url);if(t.url){diagLog("SUCCESS","Frame load event received for "+diagRedact(t.url));if(!S.hist[0]||S.hist[0].u!==t.url)S.hist.unshift({u:t.url,t:t.title,d:Date.now()});S.hist=S.hist.slice(0,300);save()}}catch(e){diagLog("WARN","Frame load completed, but page details could not be read: "+diagFormat(e))}render()}
+function go(t,u,push=true){u=norm(u);if(!u)return;diagLog("INFO","Navigation input: "+diagRedact(u));uiSound("navigate");try{if(push){t.h=t.h.slice(0,t.i+1);t.h.push(u);t.i++}if(!Engine.ready){t.url=u;t.title=host(u);t.pendingUrl=u;diagLog("INFO","Navigation queued until Scramjet is ready.");render();return}delete t.pendingUrl;
+ if(!t.f){t.url=u;t.title=host(u);frame(t);Engine.go(t,u);render();return}
+ // Load the destination in a hidden second frame; keep the current page visible until it finishes.
+ if(t.swapFrame){t.swapFrame.remove();t.swapFrame=null;t.swapState=null}
+ const next={...t,f:null,sjf:null,url:u,title:host(u),swap:true,z:t.z};
+ const f=frame(next,()=>{if(!next.started)return;try{if(f.contentWindow.location.href==="about:blank")return}catch{}
+  if(t.swapState!==next)return;
+  const old=t.f;next.f.style.opacity="0";next.f.style.transition="opacity 280ms ease";next.f.style.display="block";next.f.style.zIndex="2";old.style.transition="opacity 280ms ease";old.style.opacity="0";
+  requestAnimationFrame(()=>{if(t.swapState!==next)return;next.f.style.opacity="1"});
+  const commit=()=>{if(t.swapState!==next)return;t.f=next.f;t.sjf=next.sjf;t.url=u;t.title=next.title;t.swapFrame=null;t.swapState=null;old.remove();t.f.style.zIndex="";t.f.style.transition="";t.f.style.opacity="";finishLoad(t,t);};
+  next.f.addEventListener("transitionend",e=>{if(e.propertyName==="opacity")commit()},{once:true});setTimeout(commit,420);
+ });
+ f.style.opacity="0";f.style.zIndex="1";t.swapFrame=f;t.swapState=next;Engine.go(next,u);next.started=true;render();
+ }catch(e){if(t.swapFrame){t.swapFrame.remove();t.swapFrame=null;t.swapState=null}diagLog("ERROR","Navigation failed for "+diagRedact(u)+": "+diagFormat(e));toast("Navigation failed — open Logs");openDiagnostics()}}
+function loaded(t){finishLoad(t,t)}
 function back(){const t=cur;if(t.i>0){t.i--;go(t,t.h[t.i],false)}else if(t.i==0){t.i=-1;t.url="";t.title="";render()}}
 function fwd(){const t=cur;if(t.i<t.h.length-1){t.i++;go(t,t.h[t.i],false)}}
 function close(t){const k=tabs.indexOf(t);t.f&&t.f.remove();tabs.splice(k,1);if(!tabs.length)mk();else if(cur===t)cur=tabs[Math.min(k,tabs.length-1)];render()}

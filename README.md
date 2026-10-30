@@ -1,17 +1,15 @@
 # Splooshi
 
-Splooshi is a browser-style front end for a Scramjet-based web proxy. It features a Safari-inspired liquid-glass interface, the project's blue droplet mascot, optional interface sounds, and a diagnostics panel.
+Splooshi is a browser-style front end for a Scramjet-based web proxy. It features a Safari-inspired liquid-glass interface, Splooshi, optional interface sounds, and a diagnostics panel.
 
-Splooshi is an independent project. It is not made by, affiliated with, or endorsed by Apple. References to iOS design describe the visual inspiration only.
+Splooshi is an independent project. It is not made by, affiliated with, or endorsed by Apple.
 
 ## Features
 
-- Safari-inspired liquid-glass interface.
-- Original blue droplet mascot embedded in `index.svg`.
+- Liquid-glass UI.
 - Optional interface sounds generated with the Web Audio API.
 - Diagnostics for asset loading, service-worker status, navigation failures, and JavaScript errors.
 - Error reports that can be copied or downloaded.
-- A start screen without simulated loading indicators or decorative telemetry.
 
 ## Project files
 

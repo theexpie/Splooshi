@@ -650,7 +650,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("button,.ib,.tab,
 let tabs=[],cur;
 function mk(url){const t={id:Math.random(),url:"",title:"",h:[],i:-1,z:1};tabs.push(t);cur=t;if(url)go(t,url);else render();return t}
 function frame(t){const f=htmlEl("iframe");f.allow="fullscreen;autoplay;clipboard-write;encrypted-media";f.onload=()=>loaded(t);f.onerror=()=>diagLog("ERROR","Proxy iframe emitted an error event for "+diagRedact(t.url||"about:blank"));t.f=f;$("#views").append(f);try{Engine.attach(t)}catch(e){diagLog("ERROR","Proxy frame setup failed: "+diagFormat(e));throw e}zoom(t)}
-function go(t,u,push=true){u=norm(u);if(!u)return;diagLog("INFO","Navigation input: "+diagRedact(u));uiSound("navigate");try{if(!t.f)frame(t);if(push){t.h=t.h.slice(0,t.i+1);t.h.push(u);t.i++}t.url=u;t.title=host(u);Engine.go(t,u);render()}catch(e){diagLog("ERROR","Navigation failed for "+diagRedact(u)+": "+diagFormat(e));toast("Navigation failed — open Logs");openDiagnostics()}}
+function go(t,u,push=true){u=norm(u);if(!u)return;diagLog("INFO","Navigation input: "+diagRedact(u));uiSound("navigate");try{if(push){t.h=t.h.slice(0,t.i+1);t.h.push(u);t.i++}t.url=u;t.title=host(u);if(!Engine.ready){t.pendingUrl=u;diagLog("INFO","Navigation queued until Scramjet is ready.");render();return}delete t.pendingUrl;if(!t.f)frame(t);Engine.go(t,u);render()}catch(e){diagLog("ERROR","Navigation failed for "+diagRedact(u)+": "+diagFormat(e));toast("Navigation failed — open Logs");openDiagnostics()}}
 function loaded(t){try{const doc=t.f?.contentDocument,body=(doc?.body?.innerText||"").trim();if(/^Internal Service Worker Error:/i.test(body))diagLog("ERROR","Proxy returned a service-worker error page: "+body.slice(0,900));const u=Engine.currentUrl(t);if(u&&u!==t.url){t.url=u;t.h=t.h.slice(0,t.i+1);t.h.push(u);t.i++}const n=Engine.title(t);t.title=n||host(t.url);if(t.url){diagLog("SUCCESS","Frame load event received for "+diagRedact(t.url));if(!S.hist[0]||S.hist[0].u!==t.url)S.hist.unshift({u:t.url,t:t.title,d:Date.now()});S.hist=S.hist.slice(0,300);save()}}catch(e){diagLog("WARN","Frame load completed, but page details could not be read: "+diagFormat(e))}render()}
 function back(){const t=cur;if(t.i>0){t.i--;go(t,t.h[t.i],false)}else if(t.i==0){t.i=-1;t.url="";t.title="";render()}}
 function fwd(){const t=cur;if(t.i<t.h.length-1){t.i++;go(t,t.h[t.i],false)}}
@@ -731,8 +731,25 @@ function ovo(o){$("#ov").classList.toggle("o",!!o);if(o){ovr();const g=$("#og");
 $("#og").onclick=e=>{const x=e.target.closest("[data-x]");if(x){close(tabs[x.dataset.x]);return ovr()}const k=e.target.closest("[data-k]");if(k){cur=tabs[k.dataset.k];ovo(0);render()}};
 $("#ovd").onclick=()=>ovo(0);$("#ovn").onclick=()=>{mk();ovo(0);render()};
 /* menus */
-function menu(a,items){const m=$("#menu");m.innerHTML=items.map((x,i)=>x=="-"?"<hr>":`<button data-m="${i}"><span>${x[0]}</span><span style="opacity:.6">${x[2]||""}</span></button>`).join("");m.onclick=e=>{const b=e.target.closest("[data-m]");if(b){m.classList.remove("o");items[b.dataset.m][1]()}};
- m.classList.add("o");const e=$("#dev"),d=e.getBoundingClientRect(),sc=d.width/e.offsetWidth||1,ox=d.left+e.clientLeft*sc,oy=d.top+e.clientTop*sc,r=a.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight,L=(r.left-ox)/sc,T=(r.top-oy)/sc,B=(r.bottom-oy)/sc,VW=e.clientWidth,VH=e.clientHeight;m.style.left=Math.max(8,Math.min(VW-w-8,L))+"px";m.style.top=(T>VH/2?Math.max(8,T-h-8):B+8)+"px"}
+function menu(a,items){
+ const m=$("#menu");
+ try{
+  m.replaceChildren();
+  items.forEach((x,i)=>{
+   if(x==="-"){m.appendChild(document.createElement("hr"));return}
+   const button=document.createElement("button");button.type="button";button.dataset.m=String(i);
+   const label=document.createElement("span");label.textContent=String(x[0]??"");
+   const hint=document.createElement("span");hint.style.opacity=".6";hint.textContent=String(x[2]??"");
+   button.append(label,hint);m.appendChild(button);
+  });
+  m.onclick=e=>{const button=e.target.closest("button[data-m]");if(button){m.classList.remove("o");const item=items[Number(button.dataset.m)];if(item&&item!=="-"&&typeof item[1]==="function")item[1]()}};
+  m.classList.add("o");
+  const dev=$("#dev"),rect=dev.getBoundingClientRect(),scale=rect.width/(dev.offsetWidth||1)||1,anchor=a.getBoundingClientRect(),width=m.offsetWidth,height=m.offsetHeight;
+  const left=(anchor.left-rect.left)/scale,top=(anchor.top-rect.top)/scale,bottom=(anchor.bottom-rect.top)/scale,viewWidth=dev.clientWidth,viewHeight=dev.clientHeight;
+  m.style.left=Math.max(8,Math.min(viewWidth-width-8,left))+"px";
+  m.style.top=(top>viewHeight/2?Math.max(8,top-height-8):bottom+8)+"px";
+ }catch(err){m.classList.remove("o");diagLog("ERROR","Menu rendering failed: "+diagFormat(err))}
+}
 const bmHas=()=>S.bm.some(b=>b.u==cur.url);
 function toggleBm(){if(!cur.url)return;if(bmHas())S.bm=S.bm.filter(b=>b.u!=cur.url);else S.bm.unshift({u:cur.url,t:cur.title});save();toast(bmHas()?"Bookmark added":"Bookmark removed");sl()}
 const zs=d=>{cur.z=d?Math.min(3,Math.max(.3,+(cur.z+d).toFixed(2))):1;zoom(cur);toast(Math.round(cur.z*100)+"%")};
@@ -792,7 +809,7 @@ $("#ck").onclick=()=>cloakPage();
 addEventListener("keydown",e=>{const m=e.metaKey||e.ctrlKey,k=e.key.toLowerCase();if(!m)return;
  const a={t:()=>{mk();setTimeout(()=>$("#url").focus(),30)},w:()=>close(cur),l:()=>$("#url").focus(),r:()=>$("#rl").click(),"[":back,"]":fwd,d:toggleBm,",":()=>$("#st").classList.add("o"),"\\":()=>ovo(!$("#ov").classList.contains("o")),"=":()=>zs(.1),"-":()=>zs(-.1),"0":()=>zs(0)}[k];if(a){e.preventDefault();a()}});
 /* responsive mode */
-function mode(){const e=$("#dev"),root=$("#svgRoot"),emulating=S.dev==1,w=emulating?e.clientWidth:Math.max(root.clientWidth||0,window.innerWidth||0),h=emulating?e.clientHeight:Math.max(root.clientHeight||0,window.innerHeight||0),mob=Math.min(w,h)<700;["desktop","portrait","landscape"].forEach(c=>root.classList.remove(c));root.classList.add(mob?(h>=w?"portrait":"landscape"):"desktop");render()}
+function mode(){const e=$("#dev"),root=$("#svgRoot"),emulating=S.dev==1,vv=window.visualViewport,w=emulating?e.clientWidth:(vv?.width||window.innerWidth||document.documentElement.clientWidth),h=emulating?e.clientHeight:(vv?.height||window.innerHeight||document.documentElement.clientHeight),mob=Math.min(w,h)<700;["desktop","portrait","landscape"].forEach(c=>root.classList.remove(c));root.classList.add(mob?(h>=w?"portrait":"landscape"):"desktop");render()}
 const DV=[["iPhone 16 Pro",402,874],["iPhone SE",375,667],["Pixel 9",412,915],["iPad Air",820,1180]];
 $("#dd").innerHTML=DV.map((d,i)=>`<option value="${i}">${d[0]}</option>`).join("");$("#dd").value=S.dd;$("#dvs").value=S.dev;
 function emu(){const on=S.dev==1,e=$("#dev");$("#svgRoot").classList.toggle("emu",on);$("#dvs").value=S.dev;
@@ -870,8 +887,10 @@ emu();
 mode();
 diagLog("INFO","Splooshi interface rendered; starting proxy engine independently.");
 (async()=>{
- try{await Engine.init();toast("Splooshi is online");diagLog("SUCCESS","Splooshi startup complete; proxy engine is ready.")}
- catch(e){console.error("[Splooshi] Startup failed",e);toast("Proxy offline — open Logs");setTimeout(openDiagnostics,80)}
+ try{
+  await Engine.init();toast("Splooshi is online");diagLog("SUCCESS","Splooshi startup complete; proxy engine is ready.");
+  for(const t of tabs){if(t.pendingUrl){const u=t.pendingUrl;delete t.pendingUrl;go(t,u,false)}}
+ }catch(e){console.error("[Splooshi] Startup failed",e);toast("Proxy offline — open Logs");setTimeout(openDiagnostics,80)}
  const q=new URLSearchParams(location.search).get("url");if(q&&Engine.ready)go(cur,q)
 })();
 

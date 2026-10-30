@@ -613,9 +613,7 @@ function fwd(){const t=cur;if(t.i<t.h.length-1){t.i++;go(t,t.h[t.i],false)}}
 function close(t){const k=tabs.indexOf(t);t.f&&t.f.remove();tabs.splice(k,1);if(!tabs.length)mk();else if(cur===t)cur=tabs[Math.min(k,tabs.length-1)];render()}
 function zoom(t){if(!t.f)return;t.f.style.width=100/t.z+"%";t.f.style.height=100/t.z+"%";t.f.style.transform=`scale(${t.z})`}
 const label=t=>t.url?(t.title||host(t.url)):"Start Page";
-function fb(i){const b=htmlEl("b");b.className="lt";b.textContent=i.dataset.l||"?";i.replaceWith(b)}
-function ico(u,c){return `<img class="${c||"fav"}" data-l="${esc((host(u)[0]||"?").toUpperCase())}" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(host(u))}&sz=128" alt="" draggable="false" onerror="fb(this)">`}
-function fav(t){return t.url?ico(t.url):`<span style="font-size:13px">☆</span>`}
+function fav(t){const c=t.url?"#"+(Math.abs([...host(t.url)].reduce((a,c)=>a*31+c.charCodeAt(0)|0,7))%0xffffff).toString(16).padStart(6,"0"):"";return t.url?`<i class="fav" style="background:${c}">${esc((host(t.url)[0]||"").toUpperCase())}</i>`:`<span style="font-size:13px">☆</span>`}
 /* ===== render ===== */
 function render(){
  const t=cur,bc=$("#svgRoot").classList;
@@ -629,7 +627,7 @@ function render(){
  const svgTitle=document.querySelector("#svgTitle");if(svgTitle)svgTitle.textContent=(t.url?label(t)+" — ":"")+"Splooshi";
  favs();if($("#ov").classList.contains("o"))ovr();if($("#side").classList.contains("o"))sl();
 }
-function favs(){const e=$("#favs");e.innerHTML=S.favs.map((f,i)=>`<div class="f" style="--i:${i}" data-f="${i}"><button class="d" data-d="${i}">${I("x")}</button><div class="t" style="background:${f[3]||"rgba(255,255,255,.12)"}">${ico(f[1],"ti")}</div>${esc(f[0])}</div>`).join("")+`<div class="f ed-a" id="fa" style="display:none;--i:${S.favs.length}"><div class="t" style="background:#ffffff22;font-size:38px;font-weight:300">+</div>Add</div>`}
+function favs(){const e=$("#favs");e.innerHTML=S.favs.map((f,i)=>`<div class="f" data-f="${i}"><button class="d" data-d="${i}">${I("x")}</button><div class="t" style="background:${f[3]};color:${f[3]=="#fff"||f[3]=="#e8e8ea"?"#222":"#fff"}">${esc(f[2]||f[0][0])}</div>${esc(f[0])}</div>`).join("")+`<div class="f ed-a" id="fa" style="display:none"><div class="t" style="background:#ffffff22">+</div>Add</div>`}
 function addShortcut(){
  const modal=$("#shortcutModal"),url=$("#shortcutUrl"),name=$("#shortcutName");
  if(!modal||!url||!name)return toast("Shortcut form unavailable");

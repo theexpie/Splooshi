@@ -336,6 +336,11 @@ html{overscroll-behavior:none;touch-action:manipulation}
 #mascot-panel::after,.card::after,#st .p::after,#edit::after,.ob button::after,.seg::after,.rc::after{mix-blend-mode:screen}
 #pill>.ib,#top .ib>.icon-svg,.ob button>*{position:relative;z-index:3}
 
+/* iOS: anchor diagnostics to the app's own viewport, not Safari's fixed-position viewport. Keep this LAST so older mobile rules cannot override it. */
+@media(max-width:560px){
+ #svgRoot{height:100dvh!important}
+ #logLaunch{position:absolute!important;right:12px!important;bottom:calc(84px + env(safe-area-inset-bottom))!important;left:auto!important;top:auto!important;z-index:9999!important;min-height:42px!important;padding:10px 14px!important;opacity:1!important;transform:none!important}
+}
 ]]></style>
 <foreignObject x="0" y="0" width="100%" height="100%">
 <div xmlns="http://www.w3.org/1999/xhtml" id="svgRoot" style="display:block;position:relative;width:100vw;height:100vh;overflow:hidden;margin:0;padding:0;">

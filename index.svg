@@ -341,6 +341,18 @@ html{overscroll-behavior:none;touch-action:manipulation}
  #svgRoot{height:100dvh!important}
  #logLaunch{position:absolute!important;right:12px!important;bottom:calc(84px + env(safe-area-inset-bottom))!important;left:auto!important;top:auto!important;z-index:9999!important;min-height:42px!important;padding:10px 14px!important;opacity:1!important;transform:none!important}
 }
+/* Developer pastebin */
+#pasteModal{position:fixed;inset:0;z-index:110;display:none;place-items:center;padding:18px;background:#0009;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+#pasteModal.o{display:grid}
+#pasteModal .paste-sheet{width:min(680px,100%);max-height:88vh;display:flex;flex-direction:column;gap:12px;padding:20px;border:1px solid #ffffff2b;border-radius:24px;background:rgba(37,39,49,.94);box-shadow:0 24px 80px #000a}
+#pasteModal h3{margin:0;font-size:19px}#pasteModal p{margin:0;color:var(--dim);font-size:12px;line-height:1.5}
+#pasteModal input,#pasteModal textarea{width:100%;border:1px solid #ffffff24;border-radius:12px;background:#ffffff0c;color:var(--tx);font:13px var(--sf);padding:11px;outline:none;user-select:text;-webkit-user-select:text}
+#pasteModal input:focus,#pasteModal textarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px #0a84ff2a}
+#pasteModal textarea{min-height:260px;resize:vertical;line-height:1.5;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+#pasteModal .paste-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+#pasteModal .paste-actions button{padding:9px 14px;border:1px solid #ffffff20;border-radius:10px;background:#ffffff12}
+#pasteModal .paste-actions .primary{background:var(--ac);border-color:transparent;color:white;font-weight:600}
+#pasteError{color:#ff8b8b;min-height:16px;font-size:12px}
 /* Crossfade between the old and destination page when the new frame finishes loading. */
 #views iframe{transition:opacity 280ms ease}
 @media(prefers-reduced-motion:reduce){#views iframe{transition:none!important}}
@@ -387,6 +399,21 @@ html{overscroll-behavior:none;touch-action:manipulation}
 <div class="sr">Reset everything<button class="bt" id="cr">Reset</button></div>
 <div class="sr" style="justify-content:flex-end"><button class="bt" id="sx" style="background:var(--ac)">Done</button></div>
 </div></div>
+<div aria-hidden="true" id="pasteModal">
+ <section class="paste-sheet" role="dialog" aria-modal="true" aria-labelledby="pasteTitle">
+  <h3 id="pasteTitle">Developer Pastebin</h3>
+  <p id="pasteHint">Enter the developer password to open your private paste area.</p>
+  <form id="pasteUnlock" autocomplete="off">
+   <input id="pastePassword" type="password" placeholder="Developer password" autocomplete="current-password"/>
+   <div class="paste-actions" style="margin-top:10px"><button type="button" id="pasteCancel">Cancel</button><button class="primary" type="submit">Unlock</button></div>
+  </form>
+  <div id="pasteEditor" style="display:none;min-height:0;flex-direction:column;gap:12px">
+   <textarea id="pasteText" spellcheck="false" placeholder="Paste or type text here…"></textarea>
+   <div class="paste-actions"><button type="button" id="pasteLock">Lock</button><button type="button" id="pasteClear">Clear</button><button type="button" id="pasteCopy">Copy</button><button type="button" class="primary" id="pasteSave">Save</button></div>
+  </div>
+  <div id="pasteError" role="status"></div>
+ </section>
+</div>
 <div aria-hidden="true" id="shortcutModal">
 <form autocomplete="off" class="sheet" id="shortcutForm">
 <h3>New Shortcut</h3><p class="hint">Add a favorite to your Safari start page.</p>
@@ -775,10 +802,36 @@ function menu(a,items){
 const bmHas=()=>S.bm.some(b=>b.u==cur.url);
 function toggleBm(){if(!cur.url)return;if(bmHas())S.bm=S.bm.filter(b=>b.u!=cur.url);else S.bm.unshift({u:cur.url,t:cur.title});save();toast(bmHas()?"Bookmark added":"Bookmark removed");sl()}
 const zs=d=>{cur.z=d?Math.min(3,Math.max(.3,+(cur.z+d).toFixed(2))):1;zoom(cur);toast(Math.round(cur.z*100)+"%")};
-const pg=[["Zoom In",()=>zs(.1),"⌘+"],["Zoom Out",()=>zs(-.1),"⌘−"],["Actual Size",()=>zs(0)],"-",["Reload Page",()=>$("#rl").click()],["Find on Page…",()=>{const q=prompt("Find");if(q)try{cur.f.contentWindow.find(q)}catch{toast("Not available here")}}],["Add / Remove Bookmark",toggleBm],["Share…",share],["Cloak This Page",()=>cloakPage(),"about:blank"],["Cloak Entire Proxy",()=>cloakProxy(),"about:blank"],"-",["Diagnostics / Logs",openDiagnostics,"Ctrl+Shift+L"],["Settings…",()=>$("#st").classList.add("o")]];
+const pg=[["Developer Pastebin",openPastebin,"Password protected"],["Zoom In",()=>zs(.1),"⌘+"],["Zoom Out",()=>zs(-.1),"⌘−"],["Actual Size",()=>zs(0)],"-",["Reload Page",()=>$("#rl").click()],["Find on Page…",()=>{const q=prompt("Find");if(q)try{cur.f.contentWindow.find(q)}catch{toast("Not available here")}}],["Add / Remove Bookmark",toggleBm],["Share…",share],["Cloak This Page",()=>cloakPage(),"about:blank"],["Cloak Entire Proxy",()=>cloakProxy(),"about:blank"],"-",["Diagnostics / Logs",openDiagnostics,"Ctrl+Shift+L"],["Settings…",()=>$("#st").classList.add("o")]];
 $("#pm").onclick=e=>menu(e.currentTarget,pg);
 $("#more").onclick=e=>menu(e.currentTarget,[["New Tab",()=>{mk();$("#url").focus()}],["Show All Tabs",()=>ovo(1)],["Forward",fwd],"-",["Bookmarks",()=>{sv=1;$("#side").classList.add("o");sl()}],["History",()=>{sv=2;$("#side").classList.add("o");sl()}],["Cloak This Page",()=>cloakPage(),"about:blank"],...pg.slice(4)]);
 document.addEventListener("pointerdown",e=>{if(!e.target.closest("#menu,#pm,#more"))$("#menu").classList.remove("o")});
+/* developer pastebin */
+const PASTE_HASH="6d4bf23d61a3618c0e22a6ae5d63b77214bc91b9d59375894b746e566985ec90";
+function openPastebin(){
+ const modal=$("#pasteModal");modal.classList.add("o");$("#pasteError").textContent="";
+ $("#pasteUnlock").style.display="";$("#pasteEditor").style.display="none";
+ $("#pastePassword").value="";$("#pastePassword").focus();
+}
+function closePastebin(){$("#pasteModal").classList.remove("o");$("#pastePassword").value=""}
+$("#pasteCancel").onclick=closePastebin;
+$("#pasteUnlock").onsubmit=async e=>{
+ e.preventDefault();const pass=$("#pastePassword").value;
+ try{
+  const bytes=new TextEncoder().encode(pass),digest=await crypto.subtle.digest("SHA-256",bytes);
+  const hex=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(hex!==PASTE_HASH){$("#pasteError").textContent="Incorrect password.";$("#pastePassword").select();return}
+  $("#pasteUnlock").style.display="none";$("#pasteEditor").style.display="flex";
+  $("#pasteText").value=localStorage.getItem("splooshi_dev_paste")||"";
+  $("#pasteHint").textContent="Unlocked. Your paste is saved in this browser on this device.";
+  $("#pasteError").textContent="";$("#pasteText").focus();
+ }catch(err){$("#pasteError").textContent="Password check unavailable in this browser."}
+};
+$("#pasteSave").onclick=()=>{try{localStorage.setItem("splooshi_dev_paste",$("#pasteText").value);toast("Paste saved on this device")}catch{toast("Could not save paste")}};
+$("#pasteCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("#pasteText").value);toast("Paste copied")}catch{const t=$("#pasteText");t.select();toast("Select and copy the text")}};
+$("#pasteClear").onclick=()=>{if(confirm("Clear the saved paste?")){$("#pasteText").value="";localStorage.removeItem("splooshi_dev_paste");toast("Paste cleared")}};
+$("#pasteLock").onclick=()=>{ $("#pasteSave").click();closePastebin() };
+$("#pasteModal").addEventListener("keydown",e=>{if(e.key==="Escape")closePastebin()});
 /* settings */
 $("#openLogsFromSettings").onclick=()=>{ $("#st").classList.remove("o");openDiagnostics() };
 $("#se").value=S.se;$("#tbs").value=S.tb;$("#snd").value=String(S.snd);$("#rfs").value=String(S.rf);

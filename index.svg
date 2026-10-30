@@ -627,7 +627,7 @@ function diagLog(level,message){
  const norm={DEBUG:"DEBUG",INFO:"INFO",WARN:"WARN",WARNING:"WARN",ERROR:"ERROR",SUCCESS:"SUCCESS"},lv=norm[String(level||"INFO").toUpperCase()]||"INFO";
  const entry={at:new Date().toISOString(),level:lv,message:diagRedact(diagFormat(message)).slice(0,6000)};
  SPL_LOGS.push(entry);if(SPL_LOGS.length>SPL_LOG_LIMIT)SPL_LOGS.splice(0,SPL_LOGS.length-SPL_LOG_LIMIT);diagPersist();diagUpdateBadge();
- const panel=document.getElementById("logPanel");if(panel?.classList.contains("o"))diagRender();
+ const panel=document.getElementById("logPanel");if(lv==="ERROR"){openDiagnostics()}else if(panel?.classList.contains("o"))diagRender();
 }
 function diagReportText(){return ["Splooshi diagnostics",`Generated: ${new Date().toISOString()}`,`Page: ${diagRedact(location.href)}`,`Origin: ${location.origin}`,`Secure context: ${!!isSecureContext}`,`Service worker supported: ${!!navigator.serviceWorker}`,`Engine ready: ${typeof Engine!=="undefined"&&Engine.ready}`,"",...SPL_LOGS.map(x=>`[${x.at}] [${x.level}] ${x.message}`)].join("\n")}
 function openDiagnostics(){const p=document.getElementById("logPanel");if(!p)return;p.classList.add("o");p.setAttribute("aria-hidden","false");diagRender()}

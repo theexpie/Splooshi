@@ -659,3 +659,21 @@ specific requirements.
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
 <https://www.gnu.org/licenses/>.
+# Third-party software and attribution
+
+## Scramjet
+
+Splooshi uses Scramjet, developed by Mercury Workshop.
+
+- Project: https://github.com/MercuryWorkshop/scramjet
+- License: GNU Affero General Public License v3.0 only (AGPL-3.0-only).
+
+Scramjet is third-party software. Its original authors retain their
+copyright and attribution.
+
+Splooshi is an independent project and is not affiliated with
+or endorsed by Mercury Workshop.
+
+Other third-party components retain their respective copyrights
+and license terms.
+Please do not claim to own Splooshi.

@@ -452,7 +452,7 @@ const PATHS={
  bundle:new URL("scramjet.js",BASE_URL).href,
  wasm:new URL("scramjet.wasm",BASE_URL).href,
  utils:new URL("scramjet-utils.js",BASE_URL).href,
- api:new URL("controller.api.js",BASE_URL).href,
+ api:new URL("controller.api.js?v=3117d88",BASE_URL).href,
  inject:new URL("controller.inject.js",BASE_URL).href,
  swController:new URL("controller.sw.js",BASE_URL).href,
  libcurl:new URL("libcurl-client.js",BASE_URL).href

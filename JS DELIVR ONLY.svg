@@ -387,6 +387,7 @@ html{overscroll-behavior:none;touch-action:manipulation}
 <button class="ib" data-i="plus" id="add" title="New tab"></button>
 <button class="ib" data-i="tabs" id="ov-b" title="Show all tabs"></button>
 <button class="ib" id="settingsQuick" title="Settings" aria-label="Open settings" style="font-size:19px">⚙</button>
+<button class="ib" id="downloadQuick" title="Download Splooshi HTML" aria-label="Download Splooshi HTML" style="font-size:17px">⇩</button>
 <button class="ib" data-i="more" id="more" title="More"></button>
 </header>
 <div id="strip"></div>
@@ -423,7 +424,7 @@ html{overscroll-behavior:none;touch-action:manipulation}
 <div class="sr"><label for="reducedMotion">Reduce interface motion</label><input id="reducedMotion" type="checkbox"/></div>
 <div class="settings-section">SOUND &amp; FEEDBACK</div>
 <div class="sr"><label for="snd">Interface sounds</label><select id="snd"><option value="1">On</option><option value="0">Off</option></select></div>
-<div class="sr"><label for="soundPack">Sound profile</label><select id="soundPack"><option value="soft">Soft glass</option><option value="spacious">Spacious</option></select></div>
+<div class="sr"><label for="soundPack">Sound profile</label><select id="soundPack"><option value="soft">Soft water drops</option><option value="spacious">Gentle water</option></select></div>
 <div class="sr volume-row"><label for="soundVolume">Sound volume <output id="soundVolumeValue">35%</output></label><input id="soundVolume" type="range" min="0" max="100" step="5" value="35"/></div>
 <div class="sr"><label>Preview sounds</label><button class="bt" id="previewSound" type="button">Play preview</button></div>
 <div class="settings-section">ADVANCED</div>
@@ -699,15 +700,15 @@ const norm=s=>{s=s.trim();if(!s)return"";if(/^[a-z][a-z0-9+.-]*:\/\//i.test(s))r
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("o");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("o"),1800)}
 /* Splooshi uses actual CC0 interface audio files (SFXMint Soft UI set). */
 const SFX={
- soft:{tap:"https://sfxmint.com/dl/ui-click-56.mp3",toggle:"https://sfxmint.com/dl/ui-toggle-54.mp3",menu:"https://sfxmint.com/dl/ui-menu-12.mp3",modal:"https://sfxmint.com/dl/ui-modal-33.mp3",navigate:"https://sfxmint.com/dl/ui-swipe-50.mp3",success:"https://sfxmint.com/dl/feedback-success-68.mp3",error:"https://sfxmint.com/dl/feedback-error-62.mp3",confirm:"https://sfxmint.com/dl/feedback-confirm-67.mp3"},
- spacious:{tap:"https://sfxmint.com/dl/ui-click-40.mp3",toggle:"https://sfxmint.com/dl/ui-toggle-57.mp3",menu:"https://sfxmint.com/dl/ui-menu-15.mp3",modal:"https://sfxmint.com/dl/ui-modal-23.mp3",navigate:"https://sfxmint.com/dl/ui-swipe-44.mp3",success:"https://sfxmint.com/dl/feedback-success-50.mp3",error:"https://sfxmint.com/dl/feedback-error-46.mp3",confirm:"https://sfxmint.com/dl/feedback-confirm-57.mp3"}
+ soft:{tap:"https://sfxmint.com/dl/water-drip-75.mp3",toggle:"https://sfxmint.com/dl/water-drip-76.mp3",menu:"https://sfxmint.com/dl/water-drip-75.mp3",modal:"https://sfxmint.com/dl/water-splash-66.mp3",navigate:"https://sfxmint.com/dl/water-drip-76.mp3",success:"https://sfxmint.com/dl/water-drip-75.mp3",error:"https://sfxmint.com/dl/water-drip-76.mp3",confirm:"https://sfxmint.com/dl/water-splash-66.mp3"},
+ spacious:{tap:"https://sfxmint.com/dl/water-drip-76.mp3",toggle:"https://sfxmint.com/dl/water-drip-75.mp3",menu:"https://sfxmint.com/dl/water-drip-76.mp3",modal:"https://sfxmint.com/dl/water-splash-66.mp3",navigate:"https://sfxmint.com/dl/water-drip-75.mp3",success:"https://sfxmint.com/dl/water-drip-76.mp3",error:"https://sfxmint.com/dl/water-drip-75.mp3",confirm:"https://sfxmint.com/dl/water-splash-66.mp3"}
 };
 const soundCache=new Map();let lastSoundAt=0;
 function uiSound(kind="tap"){
  if(Number(S.snd)!==1||Number(S.soundVolume)===0)return;
  const now=Date.now();if(kind==="tap"&&now-lastSoundAt<65)return;lastSoundAt=now;
  const pack=SFX[S.soundPack]||SFX.soft,url=pack[kind]||pack.tap;
- try{let a=soundCache.get(url);if(!a){a=new window.Audio(url);a.preload="auto";soundCache.set(url,a)}const copy=a.cloneNode();copy.volume=Math.max(0,Math.min(1,Number(S.soundVolume||35)/100));copy.play().catch(()=>{});}catch{}
+ try{let a=soundCache.get(url);if(!a){a=new window.Audio(url);a.preload="auto";soundCache.set(url,a)}const copy=a.cloneNode();copy.volume=Math.max(0,Math.min(1,(Number(S.soundVolume||35)/100)*0.55));copy.play().catch(()=>{});}catch{}
 }
 /* One quiet click for normal controls; typing into the address field stays silent. */
 document.addEventListener("click",e=>{const b=e.target.closest("button,.ib,.tab,.f");if(b&&!b.disabled)uiSound("tap")},true);
@@ -835,6 +836,14 @@ const zs=d=>{cur.z=d?Math.min(3,Math.max(.3,+(cur.z+d).toFixed(2))):1;zoom(cur);
 const pg=[["Developer Pastebin",openPastebin,"Password protected"],["Zoom In",()=>zs(.1),"⌘+"],["Zoom Out",()=>zs(-.1),"⌘−"],["Actual Size",()=>zs(0)],"-",["Reload Page",()=>$("#rl").click()],["Find on Page…",()=>{const q=prompt("Find");if(q)try{cur.f.contentWindow.find(q)}catch{toast("Not available here")}}],["Add / Remove Bookmark",toggleBm],["Share…",share],["Cloak This Page",()=>cloakPage(),"about:blank"],["Cloak Entire Proxy",()=>cloakProxy(),"about:blank"],"-",["Diagnostics / Logs",openDiagnostics,"Ctrl+Shift+L"],["Settings…",()=>$("#st").classList.add("o")]];
 $("#pm").onclick=e=>menu(e.currentTarget,pg);
 $("#settingsQuick").onclick=()=>$("#st").classList.add("o");
+$("#downloadQuick").onclick=downloadSplooshiHTML;
+function downloadSplooshiHTML(){
+ const source=new URL(location.href);source.hash="";source.search="";
+ const origin=source.href.replace(/&/g,"&amp;").replace(/"/g,"&quot;");
+ const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Splooshi</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#10131c;color:#f4f6fb;font:15px system-ui,sans-serif}iframe{border:0;width:100%;height:100%;display:block}#sorry{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:28px;background:#10131c}.show{display:grid!important}.panel{max-width:460px}.panel h1{font-size:24px}.panel p{color:#b8c0d2;line-height:1.6}button{background:#ffffff18;border:1px solid #ffffff30;color:white;padding:10px 16px;border-radius:10px;font:inherit;cursor:pointer}</style></head><body><iframe id="app" title="Splooshi" src="${origin}" allow="fullscreen; clipboard-read; clipboard-write"></iframe><main id="sorry"><div class="panel"><h1>Sorry, Splooshi could not load.</h1><p>The embedded site may be unavailable or blocked by your browser or network. Please try again later.</p><button onclick="location.reload()">Try again</button></div></main><script>const frame=document.getElementById("app");let loaded=false;frame.addEventListener("load",()=>{loaded=true});setTimeout(()=>{if(!loaded)document.getElementById("sorry").classList.add("show")},12000);frame.addEventListener("error",()=>document.getElementById("sorry").classList.add("show"));</script></body></html>';
+ const blob=new Blob([html],{type:"text/html;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="Splooshi.html";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast("Splooshi.html downloaded");
+}
+
 $("#more").onclick=e=>menu(e.currentTarget,[["New Tab",()=>{mk();$("#url").focus()}],["Show All Tabs",()=>ovo(1)],["Forward",fwd],"-",["Bookmarks",()=>{sv=1;$("#side").classList.add("o");sl()}],["History",()=>{sv=2;$("#side").classList.add("o");sl()}],["Cloak This Page",()=>cloakPage(),"about:blank"],...pg.slice(4)]);
 document.addEventListener("pointerdown",e=>{if(!e.target.closest("#menu,#pm,#more"))$("#menu").classList.remove("o")});
 /* developer pastebin */

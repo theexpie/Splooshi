@@ -373,6 +373,7 @@ html{overscroll-behavior:none;touch-action:manipulation}
 <button class="ib" data-i="plus" id="add" title="New tab"></button>
 <button class="ib" data-i="tabs" id="ov-b" title="Show all tabs"></button>
 <button class="ib" id="settingsQuick" title="Settings" aria-label="Open settings" style="font-size:19px">⚙</button>
+<button class="ib" id="downloadQuick" title="Download Splooshi HTML" aria-label="Download Splooshi HTML" style="font-size:17px">⇩</button>
 <button class="ib" data-i="more" id="more" title="More"></button>
 </header>
 <div id="strip"></div>
@@ -662,23 +663,13 @@ diagLog("DEBUG",`Environment: ${location.origin}; secure context=${!!isSecureCon
 const host=u=>{try{return new URL(u).hostname.replace(/^www\./,"")}catch{return u}};
 const norm=s=>{s=s.trim();if(!s)return"";if(/^[a-z][a-z0-9+.-]*:\/\//i.test(s))return s;if(/^(localhost|[\w-]+(\.[\w-]+)+)(:\d+)?(\/.*)?$/i.test(s))return"https://"+s;return S.se+encodeURIComponent(s)};
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("o");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("o"),1800)}
-/* Tiny synthesized glass sounds: no downloaded audio, no autoplay before a gesture. */
-let audioContext=null,lastSoundAt=0;
+/* Quiet CC0 water-drop interface sounds. */
+const waterSfx={tap:"https://sfxmint.com/dl/water-drip-75.mp3",toggle:"https://sfxmint.com/dl/water-drip-76.mp3",modal:"https://sfxmint.com/dl/water-splash-66.mp3"};
+const waterCache=new Map();let lastSoundAt=0;
 function uiSound(kind="tap"){
- if(Number(S.snd)!==1)return;
- const nowMs=Date.now();if(nowMs-lastSoundAt<42)return;lastSoundAt=nowMs;
- try{
-  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  audioContext ||= new AC();if(audioContext.state==="suspended")audioContext.resume();
-  const now=audioContext.currentTime;
-  const tones=kind==="success"?[[880,0],[1174.66,.055]]:kind==="close"?[[610,0],[420,.035]]:kind==="navigate"?[[660,0],[990,.045]]:[[820,0]];
-  for(const [hz,delay] of tones){
-   const osc=audioContext.createOscillator(),gain=audioContext.createGain();
-   osc.type="sine";osc.frequency.setValueAtTime(hz,now+delay);osc.frequency.exponentialRampToValueAtTime(Math.max(120,hz*(kind==="close"?.78:1.12)),now+delay+.075);
-   gain.gain.setValueAtTime(.0001,now+delay);gain.gain.exponentialRampToValueAtTime(.026,now+delay+.009);gain.gain.exponentialRampToValueAtTime(.0001,now+delay+.105);
-   osc.connect(gain);gain.connect(audioContext.destination);osc.start(now+delay);osc.stop(now+delay+.115);
-  }
- }catch{}
+ if(Number(S.snd)!==1)return;const now=Date.now();if(now-lastSoundAt<65)return;lastSoundAt=now;
+ const src=waterSfx[kind]||waterSfx.tap;
+ try{let a=waterCache.get(src);if(!a){a=new Audio(src);a.preload="auto";waterCache.set(src,a)}const copy=a.cloneNode();copy.volume=.22;copy.play().catch(()=>{});}catch{}
 }
 /* One quiet click for normal controls; typing into the address field stays silent. */
 document.addEventListener("click",e=>{const b=e.target.closest("button,.ib,.tab,.f");if(b&&!b.disabled)uiSound("tap")},true);
@@ -806,6 +797,14 @@ const zs=d=>{cur.z=d?Math.min(3,Math.max(.3,+(cur.z+d).toFixed(2))):1;zoom(cur);
 const pg=[["Developer Pastebin",openPastebin,"Password protected"],["Zoom In",()=>zs(.1),"⌘+"],["Zoom Out",()=>zs(-.1),"⌘−"],["Actual Size",()=>zs(0)],"-",["Reload Page",()=>$("#rl").click()],["Find on Page…",()=>{const q=prompt("Find");if(q)try{cur.f.contentWindow.find(q)}catch{toast("Not available here")}}],["Add / Remove Bookmark",toggleBm],["Share…",share],["Cloak This Page",()=>cloakPage(),"about:blank"],["Cloak Entire Proxy",()=>cloakProxy(),"about:blank"],"-",["Diagnostics / Logs",openDiagnostics,"Ctrl+Shift+L"],["Settings…",()=>$("#st").classList.add("o")]];
 $("#pm").onclick=e=>menu(e.currentTarget,pg);
 $("#settingsQuick").onclick=()=>$("#st").classList.add("o");
+$("#downloadQuick").onclick=downloadSplooshiHTML;
+function downloadSplooshiHTML(){
+ const source=new URL(location.href);source.hash="";source.search="";
+ const origin=source.href.replace(/&/g,"&amp;").replace(/"/g,"&quot;");
+ const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Splooshi</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#10131c;color:#f4f6fb;font:15px system-ui,sans-serif}iframe{border:0;width:100%;height:100%;display:block}#sorry{display:none;position:fixed;inset:0;place-items:center;text-align:center;padding:28px;background:#10131c}.show{display:grid!important}.panel{max-width:460px}.panel h1{font-size:24px}.panel p{color:#b8c0d2;line-height:1.6}button{background:#ffffff18;border:1px solid #ffffff30;color:white;padding:10px 16px;border-radius:10px;font:inherit;cursor:pointer}</style></head><body><iframe id="app" title="Splooshi" src="${origin}" allow="fullscreen; clipboard-read; clipboard-write"></iframe><main id="sorry"><div class="panel"><h1>Sorry, Splooshi could not load.</h1><p>The embedded site may be unavailable or blocked by your browser or network. Please try again later.</p><button onclick="location.reload()">Try again</button></div></main><script>const frame=document.getElementById("app");let loaded=false;frame.addEventListener("load",()=>{loaded=true});setTimeout(()=>{if(!loaded)document.getElementById("sorry").classList.add("show")},12000);frame.addEventListener("error",()=>document.getElementById("sorry").classList.add("show"));</script></body></html>';
+ const blob=new Blob([html],{type:"text/html;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="Splooshi.html";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast("Splooshi.html downloaded");
+}
+
 $("#more").onclick=e=>menu(e.currentTarget,[["New Tab",()=>{mk();$("#url").focus()}],["Show All Tabs",()=>ovo(1)],["Forward",fwd],"-",["Bookmarks",()=>{sv=1;$("#side").classList.add("o");sl()}],["History",()=>{sv=2;$("#side").classList.add("o");sl()}],["Cloak This Page",()=>cloakPage(),"about:blank"],...pg.slice(4)]);
 document.addEventListener("pointerdown",e=>{if(!e.target.closest("#menu,#pm,#more"))$("#menu").classList.remove("o")});
 /* developer pastebin */

@@ -356,6 +356,20 @@ html{overscroll-behavior:none;touch-action:manipulation}
 /* Crossfade between the old and destination page when the new frame finishes loading. */
 #views iframe{transition:opacity 280ms ease}
 @media(prefers-reduced-motion:reduce){#views iframe{transition:none!important}}
+
+/* JSDelivr settings expansion */
+#st .p{width:min(620px,94vw);max-height:min(88vh,900px);padding:22px 24px;background:rgba(28,31,42,.97);border:1px solid #ffffff26;box-shadow:0 24px 90px #0009;backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%)}
+#st .settings-section{padding:15px 0 5px;color:var(--ac);font-size:10px;font-weight:800;letter-spacing:.13em}
+#st .sr{min-height:43px}#st .sr label{flex:1;min-width:0}#st .sr select{max-width:54%;min-width:130px}#st input[type=checkbox]{width:18px;height:18px;accent-color:var(--ac)}#st input[type=range]{width:44%;accent-color:var(--ac)}#st .volume-row{flex-wrap:wrap}#st .volume-row label{display:flex;justify-content:space-between;gap:12px}#st output{color:var(--dim);font-variant-numeric:tabular-nums}
+#svgRoot.theme-light{--bg:#eef1f7;--bar:#f7f8fc;--pill:#e1e5ee;--pill2:#d4d9e4;--tx:#171923;--dim:#626a7a;--bd:#00000018}
+#svgRoot.theme-dark{--bg:#17181c;--bar:#202126;--pill:#303138;--pill2:#41434b;--tx:#f4f5f8;--dim:#a2a5ae}
+#svgRoot.theme-ocean{--bg:#071b2b;--bar:#0d2a40;--pill:#143c59;--pill2:#1c5272;--tx:#edf8ff;--dim:#9dbbce}
+#svgRoot.theme-rose{--bg:#24151f;--bar:#35202f;--pill:#4a2b43;--pill2:#603753;--tx:#fff1f8;--dim:#c9a9bc}
+#svgRoot.accent-violet{--ac:#a78bfa}#svgRoot.accent-cyan{--ac:#22d3ee}#svgRoot.accent-green{--ac:#34d399}#svgRoot.accent-orange{--ac:#f59e0b}#svgRoot.accent-pink{--ac:#f472b6}
+#svgRoot.compact #top{height:43px}#svgRoot.compact .ib{height:27px}
+#svgRoot.reduce-motion *,#svgRoot.reduce-motion *::before,#svgRoot.reduce-motion *::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+#start.wall-midnight{background:linear-gradient(145deg,#080b16,#151a2c 55%,#090d18)}#start.wall-ocean{background:linear-gradient(145deg,#052d3a,#0c5270 55%,#071b32)}#start.wall-plain{background:#17191f}
+
 ]]></style>
 <foreignObject x="0" y="0" width="100%" height="100%">
 <div xmlns="http://www.w3.org/1999/xhtml" id="svgRoot" style="display:block;position:relative;width:100vw;height:100vh;overflow:hidden;margin:0;padding:0;">
@@ -387,16 +401,36 @@ html{overscroll-behavior:none;touch-action:manipulation}
 <div id="ov"><div id="og"></div><div class="ob"><button data-i="plus" id="ovn" style="padding:8px 14px"></button><b id="ovc"></b><button id="ovd">Done</button></div></div>
 <div class="pop" id="menu"></div>
 <div id="st"><div class="p">
-<h3>Settings</h3>
-<div class="sr">Search engine<select id="se"><option value="https://www.google.com/search?q=">Google</option><option value="https://duckduckgo.com/?q=">DuckDuckGo</option><option value="https://www.bing.com/search?q=">Bing</option><option value="https://search.brave.com/search?q=">Brave</option></select></div>
-<div class="sr">Tab bar<select id="tbs"><option value="1">Show</option><option value="0">Hide</option></select></div>
-<div class="sr">Liquid refraction (Chromium)<select id="rfs"><option value="1">On</option><option value="0">Off</option></select></div>
-
-
-<div class="sr">Developer mode<select id="dvs"><option value="0">Off</option><option value="1">Mobile emulator</option></select></div>
-<div class="sr">Interface sounds<select id="snd"><option value="1">On</option><option value="0">Off</option></select></div><div class="sr">Logs &amp; errors<button class="bt" id="openLogsFromSettings" type="button">View logs <span id="settingsErrorCount">(0)</span></button></div><div class="sr">Cloak in about:blank<button class="bt" id="ck">Open</button></div>
-<div class="sr">Clear history<button class="bt" id="ch">Clear</button></div>
-<div class="sr">Reset everything<button class="bt" id="cr">Reset</button></div>
+<h3>Settings <small style="font-size:10px;color:var(--dim);font-weight:500">PERSONALIZE SPLOOSHI</small></h3>
+<div class="settings-section">APPEARANCE</div>
+<div class="sr"><label for="theme">Theme</label><select id="theme"><option value="midnight">Midnight Glass</option><option value="dark">Graphite</option><option value="light">Light</option><option value="ocean">Ocean</option><option value="rose">Rose</option><option value="system">System</option></select></div>
+<div class="sr"><label for="accent">Accent color</label><select id="accent"><option value="blue">Ocean blue</option><option value="violet">Violet</option><option value="cyan">Cyan</option><option value="green">Emerald</option><option value="orange">Amber</option><option value="pink">Pink</option></select></div>
+<div class="sr"><label for="wallpaper">Start page background</label><select id="wallpaper"><option value="aurora">Aurora</option><option value="midnight">Midnight</option><option value="ocean">Deep ocean</option><option value="plain">Plain</option></select></div>
+<div class="sr"><label for="tbs">Tab bar</label><select id="tbs"><option value="1">Show</option><option value="0">Hide</option></select></div>
+<div class="sr"><label for="compact">Compact toolbar</label><select id="compact"><option value="0">Comfortable</option><option value="1">Compact</option></select></div>
+<div class="settings-section">PRIVACY &amp; CLOAKING</div>
+<div class="sr"><label for="cloakTitle">Cloaked tab identity</label><select id="cloakTitle"><option value="Google Drive">Google Drive</option><option value="Google Classroom">Google Classroom</option><option value="Google Docs">Google Docs</option><option value="Canvas">Canvas</option><option value="Calculator">Calculator</option><option value="about:blank">Blank page</option></select></div>
+<div class="sr"><label for="cloakTheme">Cloak page color</label><select id="cloakTheme"><option value="light">Light</option><option value="dark">Dark</option></select></div>
+<div class="sr"><label for="panicKey">Panic shortcut</label><select id="panicKey"><option value="off">Off</option><option value="Escape">Escape</option><option value="F9">F9</option><option value="F10">F10</option></select></div>
+<div class="sr"><label for="cloakOnOpen">Cloak current page</label><button class="bt" id="ck">Open in about:blank</button></div>
+<div class="sr"><label for="hideTitle">Disguise browser document title</label><input id="hideTitle" type="checkbox"/></div>
+<div class="settings-section">BROWSING</div>
+<div class="sr"><label for="se">Search engine</label><select id="se"><option value="https://www.google.com/search?q=">Google</option><option value="https://duckduckgo.com/?q=">DuckDuckGo</option><option value="https://www.bing.com/search?q=">Bing</option><option value="https://search.brave.com/search?q=">Brave</option></select></div>
+<div class="sr"><label for="confirmClose">Confirm closing last tab</label><input id="confirmClose" type="checkbox"/></div>
+<div class="sr"><label for="openNewTab">Open links in new tab</label><input id="openNewTab" type="checkbox"/></div>
+<div class="sr"><label for="restoreSession">Restore tabs after refresh</label><input id="restoreSession" type="checkbox"/></div>
+<div class="sr"><label for="reducedMotion">Reduce interface motion</label><input id="reducedMotion" type="checkbox"/></div>
+<div class="settings-section">SOUND &amp; FEEDBACK</div>
+<div class="sr"><label for="snd">Interface sounds</label><select id="snd"><option value="1">On</option><option value="0">Off</option></select></div>
+<div class="sr"><label for="soundPack">Sound profile</label><select id="soundPack"><option value="soft">Soft glass</option><option value="crisp">Crisp</option><option value="spacious">Spacious</option></select></div>
+<div class="sr volume-row"><label for="soundVolume">Sound volume <output id="soundVolumeValue">35%</output></label><input id="soundVolume" type="range" min="0" max="100" step="5" value="35"/></div>
+<div class="sr"><label>Preview sounds</label><button class="bt" id="previewSound" type="button">Play preview</button></div>
+<div class="settings-section">ADVANCED</div>
+<div class="sr"><label for="rfs">Liquid refraction (Chromium)</label><select id="rfs"><option value="1">On</option><option value="0">Off</option></select></div>
+<div class="sr"><label for="dvs">Developer mode</label><select id="dvs"><option value="0">Off</option><option value="1">Mobile emulator</option></select></div>
+<div class="sr"><label>Logs &amp; errors</label><button class="bt" id="openLogsFromSettings" type="button">View logs <span id="settingsErrorCount">(0)</span></button></div>
+<div class="sr"><label>Clear history</label><button class="bt" id="ch">Clear</button></div>
+<div class="sr"><label>Reset everything</label><button class="bt" id="cr">Reset</button></div>
 <div class="sr" style="justify-content:flex-end"><button class="bt" id="sx" style="background:var(--ac)">Done</button></div>
 </div></div>
 <div aria-hidden="true" id="pasteModal">
@@ -584,7 +618,7 @@ const Engine=(()=>{
  };
 })();
 /* ===== state ===== */
-const D={favs:[["Apple","https://www.apple.com","","#e8e8ea"],["iCloud","https://www.icloud.com","☁","#2a8ff7"],["Yahoo","https://www.yahoo.com","!","#6001d2"],["Bing","https://www.bing.com","B","#1b8cf0"],["Google","https://www.google.com","G","#fff"],["Wikipedia","https://www.wikipedia.org","W","#fff"],["Facebook","https://www.facebook.com","f","#1877f2"],["Twitter","https://twitter.com","𝕏","#000"],["YouTube","https://www.youtube.com","▶","#f00"],["Reddit","https://www.reddit.com","R","#ff4500"]],bm:[],hist:[],se:"https://www.google.com/search?q=",tb:1,dev:0,dd:0,dr:0,snd:1,rf:1};
+const D={favs:[["Apple","https://www.apple.com","","#e8e8ea"],["iCloud","https://www.icloud.com","☁","#2a8ff7"],["Yahoo","https://www.yahoo.com","!","#6001d2"],["Bing","https://www.bing.com","B","#1b8cf0"],["Google","https://www.google.com","G","#fff"],["Wikipedia","https://www.wikipedia.org","W","#fff"],["Facebook","https://www.facebook.com","f","#1877f2"],["Twitter","https://twitter.com","𝕏","#000"],["YouTube","https://www.youtube.com","▶","#f00"],["Reddit","https://www.reddit.com","R","#ff4500"]],bm:[],hist:[],se:"https://www.google.com/search?q=",tb:1,dev:0,dd:0,dr:0,snd:1,rf:1,theme:"midnight",accent:"blue",wallpaper:"aurora",compact:0,cloakTitle:"Google Drive",cloakTheme:"light",panicKey:"off",hideTitle:0,confirmClose:0,openNewTab:0,restoreSession:0,reducedMotion:0,soundPack:"soft",soundVolume:35};
 let S;try{S={...D,...JSON.parse(localStorage.sf27)}}catch{S={...D}}
 if(typeof S.snd!=="number")S.snd=1;if(typeof S.rf!=="number")S.rf=1;delete S.wn;
 const save=()=>{try{localStorage.sf27=JSON.stringify(S)}catch{}};
@@ -662,23 +696,18 @@ diagLog("DEBUG",`Environment: ${location.origin}; secure context=${!!isSecureCon
 const host=u=>{try{return new URL(u).hostname.replace(/^www\./,"")}catch{return u}};
 const norm=s=>{s=s.trim();if(!s)return"";if(/^[a-z][a-z0-9+.-]*:\/\//i.test(s))return s;if(/^(localhost|[\w-]+(\.[\w-]+)+)(:\d+)?(\/.*)?$/i.test(s))return"https://"+s;return S.se+encodeURIComponent(s)};
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("o");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("o"),1800)}
-/* Tiny synthesized glass sounds: no downloaded audio, no autoplay before a gesture. */
-let audioContext=null,lastSoundAt=0;
+/* Splooshi uses actual CC0 interface audio files (SFXMint Soft UI set). */
+const SFX={
+ soft:{tap:"https://sfxmint.com/dl/ui-click-56.mp3",toggle:"https://sfxmint.com/dl/ui-toggle-54.mp3",menu:"https://sfxmint.com/dl/ui-menu-12.mp3",modal:"https://sfxmint.com/dl/ui-modal-33.mp3",navigate:"https://sfxmint.com/dl/ui-swipe-50.mp3",success:"https://sfxmint.com/dl/feedback-success-68.mp3",error:"https://sfxmint.com/dl/feedback-error-62.mp3",confirm:"https://sfxmint.com/dl/feedback-confirm-67.mp3"},
+ crisp:{tap:"https://sfxmint.com/dl/ui-click-05.mp3",toggle:"https://sfxmint.com/dl/ui-toggle-05.mp3",menu:"https://sfxmint.com/dl/ui-menu-05.mp3",modal:"https://sfxmint.com/dl/ui-modal-05.mp3",navigate:"https://sfxmint.com/dl/ui-swipe-05.mp3",success:"https://sfxmint.com/dl/ui-success-05.mp3",error:"https://sfxmint.com/dl/ui-error-05.mp3",confirm:"https://sfxmint.com/dl/ui-confirm-05.mp3"},
+ spacious:{tap:"https://sfxmint.com/dl/ui-click-40.mp3",toggle:"https://sfxmint.com/dl/ui-toggle-57.mp3",menu:"https://sfxmint.com/dl/ui-menu-15.mp3",modal:"https://sfxmint.com/dl/ui-modal-23.mp3",navigate:"https://sfxmint.com/dl/ui-swipe-44.mp3",success:"https://sfxmint.com/dl/feedback-success-50.mp3",error:"https://sfxmint.com/dl/feedback-error-46.mp3",confirm:"https://sfxmint.com/dl/feedback-confirm-57.mp3"}
+};
+const soundCache=new Map();let lastSoundAt=0;
 function uiSound(kind="tap"){
- if(Number(S.snd)!==1)return;
- const nowMs=Date.now();if(nowMs-lastSoundAt<42)return;lastSoundAt=nowMs;
- try{
-  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-  audioContext ||= new AC();if(audioContext.state==="suspended")audioContext.resume();
-  const now=audioContext.currentTime;
-  const tones=kind==="success"?[[880,0],[1174.66,.055]]:kind==="close"?[[610,0],[420,.035]]:kind==="navigate"?[[660,0],[990,.045]]:[[820,0]];
-  for(const [hz,delay] of tones){
-   const osc=audioContext.createOscillator(),gain=audioContext.createGain();
-   osc.type="sine";osc.frequency.setValueAtTime(hz,now+delay);osc.frequency.exponentialRampToValueAtTime(Math.max(120,hz*(kind==="close"?.78:1.12)),now+delay+.075);
-   gain.gain.setValueAtTime(.0001,now+delay);gain.gain.exponentialRampToValueAtTime(.026,now+delay+.009);gain.gain.exponentialRampToValueAtTime(.0001,now+delay+.105);
-   osc.connect(gain);gain.connect(audioContext.destination);osc.start(now+delay);osc.stop(now+delay+.115);
-  }
- }catch{}
+ if(Number(S.snd)!==1||Number(S.soundVolume)===0)return;
+ const now=Date.now();if(kind==="tap"&&now-lastSoundAt<65)return;lastSoundAt=now;
+ const pack=SFX[S.soundPack]||SFX.soft,url=pack[kind]||pack.tap;
+ try{let a=soundCache.get(url);if(!a){a=new window.Audio(url);a.preload="auto";soundCache.set(url,a)}const copy=a.cloneNode();copy.volume=Math.max(0,Math.min(1,Number(S.soundVolume||35)/100));copy.play().catch(()=>{});}catch{}
 }
 /* One quiet click for normal controls; typing into the address field stays silent. */
 document.addEventListener("click",e=>{const b=e.target.closest("button,.ib,.tab,.f");if(b&&!b.disabled)uiSound("tap")},true);
@@ -834,11 +863,27 @@ $("#pasteClear").onclick=()=>{if(confirm("Clear the saved paste?")){$("#pasteTex
 $("#pasteLock").onclick=()=>{ $("#pasteSave").click();closePastebin() };
 $("#pasteModal").addEventListener("keydown",e=>{if(e.key==="Escape")closePastebin()});
 /* settings */
-$("#openLogsFromSettings").onclick=()=>{ $("#st").classList.remove("o");openDiagnostics() };
-$("#se").value=S.se;$("#tbs").value=S.tb;$("#snd").value=String(S.snd);$("#rfs").value=String(S.rf);
-$("#se").onchange=e=>{S.se=e.target.value;save()};$("#snd").onchange=e=>{S.snd=+e.target.value;save();if(S.snd)uiSound("success");toast(S.snd?"Interface sounds on":"Interface sounds off")};$("#tbs").onchange=e=>{S.tb=+e.target.value;save();render()};
+$("#openLogsFromSettings").onclick=()=>{$("#st").classList.remove("o");openDiagnostics()};
+function syncSettings(){
+ for(const id of ["se","tbs","snd","rfs","theme","accent","wallpaper","compact","cloakTitle","cloakTheme","panicKey","soundPack","soundVolume"])if($("#"+id))$("#"+id).value=String(S[id==="tbs"?"tb":id==="rfs"?"rf":id]??"");
+ for(const id of ["hideTitle","confirmClose","openNewTab","restoreSession","reducedMotion"])$("#"+id).checked=!!S[id];
+ $("#soundVolumeValue").textContent=(S.soundVolume??35)+"%";
+}
+function applyPreferences(){
+ const root=$("#svgRoot");root.classList.remove("theme-light","theme-dark","theme-ocean","theme-rose","accent-violet","accent-cyan","accent-green","accent-orange","accent-pink","compact","reduce-motion");
+ root.classList.add("theme-"+(S.theme==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"midnight"):S.theme));
+ if(S.accent!=="blue")root.classList.add("accent-"+S.accent);
+ if(S.compact)root.classList.add("compact");if(S.reducedMotion)root.classList.add("reduce-motion");
+ $("#start").classList.remove("wall-midnight","wall-ocean","wall-plain");if(S.wallpaper!=="aurora")$("#start").classList.add("wall-"+S.wallpaper);
+ const title=document.querySelector("#svgTitle");if(title&&S.hideTitle)title.textContent=S.cloakTitle||"Google Drive";else if(title)title.textContent=(cur?.url?label(cur)+" — ":"")+"Splooshi";
+}
+syncSettings();applyPreferences();
+const settingMap={se:"se",tbs:"tb",snd:"snd",rfs:"rf",theme:"theme",accent:"accent",wallpaper:"wallpaper",compact:"compact",cloakTitle:"cloakTitle",cloakTheme:"cloakTheme",panicKey:"panicKey",soundPack:"soundPack",soundVolume:"soundVolume"};
+for(const [id,key] of Object.entries(settingMap))$("#"+id).addEventListener("change",e=>{S[key]=["tb","rf","snd","compact","soundVolume"].includes(key)?Number(e.target.value):e.target.value;save();if(key==="tb")render();if(key==="rf")rfx();if(["theme","accent","wallpaper","compact"].includes(key))applyPreferences();if(key==="soundVolume")$("#soundVolumeValue").textContent=S.soundVolume+"%";if(key==="snd"&&S.snd)uiSound("success");if(key==="soundPack")uiSound("menu")});
+for(const id of ["hideTitle","confirmClose","openNewTab","restoreSession","reducedMotion"])$("#"+id).addEventListener("change",e=>{S[id]=e.target.checked?1:0;save();if(id==="reducedMotion")applyPreferences();if(id==="hideTitle")applyPreferences()});
 function rfx(){const ua=navigator.userAgent;$("#svgRoot").classList.toggle("rf",S.rf===1&&/Chrome\//.test(ua)&&!/iPhone|iPad|CriOS|Android/.test(ua))}
-rfx();$("#rfs").onchange=e=>{S.rf=+e.target.value;save();rfx()};
+rfx();
+$("#previewSound").onclick=()=>uiSound("success");
 $("#ch").onclick=()=>{S.hist=[];save();sl();toast("History cleared")};
 $("#cr").onclick=()=>{if(confirm("Reset all data?")){localStorage.removeItem("sf27");location.reload()}};
 $("#sx").onclick=()=>$("#st").classList.remove("o");
@@ -848,8 +893,8 @@ function cloakProxy(){
  if(!w)return toast("Allow pop-ups to cloak the proxy");
  try{
   const d=w.document;
-  d.title="Google Drive";
-  d.documentElement.style.cssText="margin:0;width:100%;height:100%;background:#fff";
+  d.title=S.cloakTitle||"Google Drive";
+  d.documentElement.style.cssText="margin:0;width:100%;height:100%;background:${S.cloakTheme==="dark"?"#101116":"#fff"}";
   d.body.style.cssText="margin:0;width:100%;height:100%;overflow:hidden";
   const f=d.createElement("iframe");
   f.title="Cloaked proxy";f.referrerPolicy="no-referrer";
@@ -865,7 +910,7 @@ function cloakPage(url=cur?.url){
  const w=window.open("about:blank","_blank");
  if(!w)return toast("Allow pop-ups to use Cloak");
  try{
-  w.document.title="Google Docs";
+  w.document.title=S.cloakTitle||"Google Docs";
   w.document.documentElement.style.cssText="margin:0;width:100%;height:100%;background:#fff";
   w.document.body.style.cssText="margin:0;width:100%;height:100%;overflow:hidden";
   const f=w.document.createElement("iframe");

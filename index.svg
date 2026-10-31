@@ -372,6 +372,7 @@ html{overscroll-behavior:none;touch-action:manipulation}
 <button class="ib" data-i="share" id="share" title="Share"></button>
 <button class="ib" data-i="plus" id="add" title="New tab"></button>
 <button class="ib" data-i="tabs" id="ov-b" title="Show all tabs"></button>
+<button class="ib" id="settingsQuick" title="Settings" aria-label="Open settings" style="font-size:19px">⚙</button>
 <button class="ib" data-i="more" id="more" title="More"></button>
 </header>
 <div id="strip"></div>
@@ -804,6 +805,7 @@ function toggleBm(){if(!cur.url)return;if(bmHas())S.bm=S.bm.filter(b=>b.u!=cur.u
 const zs=d=>{cur.z=d?Math.min(3,Math.max(.3,+(cur.z+d).toFixed(2))):1;zoom(cur);toast(Math.round(cur.z*100)+"%")};
 const pg=[["Developer Pastebin",openPastebin,"Password protected"],["Zoom In",()=>zs(.1),"⌘+"],["Zoom Out",()=>zs(-.1),"⌘−"],["Actual Size",()=>zs(0)],"-",["Reload Page",()=>$("#rl").click()],["Find on Page…",()=>{const q=prompt("Find");if(q)try{cur.f.contentWindow.find(q)}catch{toast("Not available here")}}],["Add / Remove Bookmark",toggleBm],["Share…",share],["Cloak This Page",()=>cloakPage(),"about:blank"],["Cloak Entire Proxy",()=>cloakProxy(),"about:blank"],"-",["Diagnostics / Logs",openDiagnostics,"Ctrl+Shift+L"],["Settings…",()=>$("#st").classList.add("o")]];
 $("#pm").onclick=e=>menu(e.currentTarget,pg);
+$("#settingsQuick").onclick=()=>$("#st").classList.add("o");
 $("#more").onclick=e=>menu(e.currentTarget,[["New Tab",()=>{mk();$("#url").focus()}],["Show All Tabs",()=>ovo(1)],["Forward",fwd],"-",["Bookmarks",()=>{sv=1;$("#side").classList.add("o");sl()}],["History",()=>{sv=2;$("#side").classList.add("o");sl()}],["Cloak This Page",()=>cloakPage(),"about:blank"],...pg.slice(4)]);
 document.addEventListener("pointerdown",e=>{if(!e.target.closest("#menu,#pm,#more"))$("#menu").classList.remove("o")});
 /* developer pastebin */

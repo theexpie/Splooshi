@@ -816,12 +816,12 @@ function menu(a,items){
   m.replaceChildren();
   items.forEach((x,i)=>{
    if(x==="-"){m.appendChild(document.createElement("hr"));return}
-   const button=document.createElement("button");button.type="button";button.dataset.m=String(i);
+   const button=document.createElementNS("http://www.w3.org/1999/xhtml","button");button.type="button";button.setAttribute("data-m",String(i));
    const label=document.createElement("span");label.textContent=String(x[0]??"");
    const hint=document.createElement("span");hint.style.opacity=".6";hint.textContent=String(x[2]??"");
    button.append(label,hint);m.appendChild(button);
   });
-  m.onclick=e=>{const button=e.target.closest("button[data-m]");if(button){m.classList.remove("o");const item=items[Number(button.dataset.m)];if(item&&item!=="-"&&typeof item[1]==="function")item[1]()}};
+  m.onclick=e=>{const button=e.target.closest("button[data-m]");if(button){m.classList.remove("o");const item=items[Number(button.getAttribute("data-m"))];if(item&&item!=="-"&&typeof item[1]==="function")item[1]()}};
   m.classList.add("o");
   const dev=$("#dev"),rect=dev.getBoundingClientRect(),scale=rect.width/(dev.offsetWidth||1)||1,anchor=a.getBoundingClientRect(),width=m.offsetWidth,height=m.offsetHeight;
   const left=(anchor.left-rect.left)/scale,top=(anchor.top-rect.top)/scale,bottom=(anchor.bottom-rect.top)/scale,viewWidth=dev.clientWidth,viewHeight=dev.clientHeight;
